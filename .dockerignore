@@ -1,0 +1,47 @@
+# Dependencies
+/vendor
+/node_modules
+
+# Dev environment
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+docker-compose*.yml
+Dockerfile
+
+# Tests
+/tests
+
+# Logs & cache
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+!/storage/framework/cache/.gitkeep
+!/storage/framework/sessions/.gitkeep
+!/storage/framework/views/.gitkeep
+!/storage/logs/.gitkeep
+
+# Build artifacts
+/public/hot
+/public/build
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# README
+README.md

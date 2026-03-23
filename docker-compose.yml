@@ -1,0 +1,66 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app1_php
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/app1
+    networks:
+      - infra_network
+      - app1_network
+    environment:
+      - APP_ENV=${APP_ENV:-local}
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+    container_name: app1_redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 64mb --maxmemory-policy allkeys-lru
+    networks:
+      - app1_network
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app1_worker
+    restart: unless-stopped
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    volumes:
+      - .:/var/www/app1
+    networks:
+      - infra_network
+      - app1_network
+    depends_on:
+      - php
+      - redis
+
+  reverb:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app1_reverb
+    restart: unless-stopped
+    command: php artisan reverb:start --host=0.0.0.0 --port=8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/var/www/app1
+    networks:
+      - infra_network
+      - app1_network
+    depends_on:
+      - php
+      - redis
+
+networks:
+  app1_network:
+    name: app1_network
+    driver: bridge
+  infra_network:
+    external: true
+    name: infra_network
